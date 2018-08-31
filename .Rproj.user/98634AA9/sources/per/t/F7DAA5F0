@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1535726685257.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F7DAA5F0",
+    "lastKnownWriteTime" : 13229804949012596,
+    "last_content_update" : 1535726685257,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "DE93701E",
+        "caption" : "t_podetails",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=t_podetails&cache_key=DE93701E",
+        "displayedObservations" : 913495,
+        "environment" : "",
+        "object" : "t_podetails",
+        "preview" : 0,
+        "totalObservations" : 913495,
+        "variables" : 7
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

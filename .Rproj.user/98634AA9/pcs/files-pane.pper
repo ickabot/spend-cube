@@ -1,0 +1,9 @@
+{
+    "path" : "C:/Users/ipoole/Desktop/Spend Cube/spend-cube/Data_Sources/1_SRM/MM_4_POSTATUS",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
