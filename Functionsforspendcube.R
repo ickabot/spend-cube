@@ -1,4 +1,4 @@
-library(lubridate)
+### this script defines all of the functions to be used in the spend cube csv creation
 
 Add_Transaction_ID <- function(df, dfsource, column, dropcolumn = TRUE) {
   ### this function is to create a unique transaction id for
@@ -22,10 +22,17 @@ Add_Transaction_ID <- function(df, dfsource, column, dropcolumn = TRUE) {
   a
 }
 
-### this is test data
+### this is for testing the Add_Transaction_ID Function
 
-Dat <- data.frame(site = rep(c(1,8,4), each = 3), score = runif(9))
+#Dat <- data.frame(site = rep(c(1,8,4), each = 3), score = runif(9))
 
+#droppedcolumn<-Add_Transaction_ID(Dat, "SRM", "site")
+#keptcolumn<-Add_Transaction_ID(Dat, "SRM", "site", FALSE)
 
-droppedcolumn<-Add_Transaction_ID(Dat, "SRM", "site")
-keptcolumn<-Add_Transaction_ID(Dat, "SRM", "site", FALSE)
+### Cleans up the column names in the dataframes
+
+CleanColnames <- function(df) {
+  colnames(df) <- str_replace_all(colnames(df),"[[:punct:]]","")
+  colnames(df) <- str_replace_all(colnames(df)," ","_")
+  colnames(df) <- tolower(colnames(df))
+}
