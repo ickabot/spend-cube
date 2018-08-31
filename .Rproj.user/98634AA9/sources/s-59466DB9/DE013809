@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1535722767145.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3416742998",
+    "id" : "DE013809",
+    "lastKnownWriteTime" : 1535722949,
+    "last_content_update" : 1535722949689,
+    "path" : "C:/Users/ipoole/Desktop/Spend Cube/spend-cube/Functionsforspendcube.R",
+    "project_path" : "Functionsforspendcube.R",
+    "properties" : {
+        "cursorPosition" : "23,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
