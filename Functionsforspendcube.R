@@ -29,3 +29,5 @@ Dat <- data.frame(site = rep(c(1,8,4), each = 3), score = runif(9))
 
 droppedcolumn<-Add_Transaction_ID(Dat, "SRM", "site")
 keptcolumn<-Add_Transaction_ID(Dat, "SRM", "site", FALSE)
+
+
