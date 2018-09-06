@@ -35,9 +35,10 @@ Add_Transaction_ID <- function(df, dfsource, column, dropcolumn = TRUE) {
 
 CleanColnames <- function(df) {
   colnames(df) <- str_replace_all(colnames(df),"#", "Num")
-  colnames(df) <- str_replace_all(colnames(df),"$", "Spend")
+  colnames(df) <- str_replace_all(colnames(df),"\\$", "Spend")
   colnames(df) <- str_replace_all(colnames(df),"[[:punct:]]", "")
   colnames(df) <- str_replace_all(colnames(df)," ","_")
+  colnames(df) <- str_replace_all(colnames(df),"__","_")
   colnames(df) <- tolower(colnames(df))
 }
 
@@ -52,21 +53,70 @@ ColTypesdigitend <- function(n_character_cols,n_digit_cols) {
 ### function to create column names for BW reports
 
 BWColnames <- function (directory) {
-  rm_spend <- c("$","#")
-  colstr1 <- as.character(read_delim(directory[1],skip = 5, delim = ";", n_max = 1, col_names = FALSE))
-  colstr1 <- colstr1[!colstr1 %in% rm_spend]
-  colstr2 <- na.omit(as.character(read_delim(directory[1],skip = 4, delim = ";", n_max = 1, col_names = FALSE))) 
-  c(colstr1,colstr2)
+  colstr1 <- na.omit(as.character(read_delim(directory[1],skip = 4, delim = ";", n_max = 1, col_names = FALSE))) 
+  colstr2 <- as.character(read_delim(directory[1],skip = 5, delim = ";", n_max = 1, col_names = FALSE))
+  colstr2 <- colstr2[1:(length(colstr2)-length(colstr1))]
+  c(colstr2,colstr1)
 }
 
 ### combined import function for BW files
 
-BWImport <- function(directories,x,y) {
-  coltypes <- ColTypesdigitend(x,y)
-  colnames <- BWColnames(directories)
-  importtable <- bind_rows(lapply(directories,read_delim, delim = ";", 
-                                  col_types = coltypes, 
-                                  col_names = colnames, skip = 5))
+BWImport <- function(directory = dir()) {
+  colstr1 <- na.omit(as.character(read_delim(directory[1],skip = 4, delim = ";", n_max = 1, col_names = FALSE))) 
+  colstr2 <- as.character(read_delim(directory[1],skip = 5, delim = ";", n_max = 1, col_names = FALSE))
+  colstr2 <- colstr2[1:(length(colstr2) - length(colstr1))]
+  columnNames <- c(colstr2, colstr1)
+  columnTypes <- paste0(paste0(rep("c", length(columnNames)), collapse = ""))
+  importtable <- bind_rows(lapply(directory,read_delim, delim = ";", 
+                                  col_types = columnTypes, 
+                                  col_names = columnNames, skip = 6))
   colnames(importtable) <- CleanColnames(importtable)
   importtable
 }
+
+### function to convert currency
+
+convertCurrency <- function(currency) {
+  currency1 <- sub('$','',as.character(currency),fixed=TRUE)
+  currency2 <- as.numeric(gsub('\\,','',as.character(currency1))) 
+  currency2
+}
+
+### function to create seperate quantity
+
+seperateQuantity <- function(columnnames,df) { 
+  df %>% select(columnnames) %>% 
+    separate(columnnames, paste0(columnnames, c(".1",".2")), sep = "\\s+") 
+}
+
+
+### function to create measure columns
+
+MeasureColumns <- function(df, measure1 = "value", measure2 = "paid", measure3 = "quantity") {
+  values <- as.data.frame(lapply(select(df, ends_with(measure1), ends_with(measure2)), convertCurrency))
+  quantities <- as.data.frame(select(df, ends_with(measure3))) %>%
+    mutate(id = row_number())
+  quantitieslength <- length(quantities)-1
+  quantities <- names(quantities[1:quantitieslength]) %>%
+    map(seperateQuantity,quantities) %>%
+    as.data.frame()
+  num_quantities <- quantities %>% select(ends_with(".1"))
+  uom_quantities <- quantities %>% select(ends_with(".2"))
+  num_quantities <- as.data.frame(lapply(num_quantities, as.numeric))
+  df %<>% select(-ends_with(measure1), -ends_with(measure2), -ends_with(measure3)) %>%
+    bind_cols(values, num_quantities, uom_quantities)
+}
+
+### function to read shared drive folders
+
+directoryPrint <- function(directory = dir()) {
+  b <- data.frame()
+  for (i in 1:length(directory)) {
+    setwd(directory[i])
+    a <- as.data.frame(dir())
+    b <- bind_rows(b,a)
+    setwd("..")
+  }
+  b
+}
+

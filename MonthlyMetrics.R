@@ -96,12 +96,92 @@ setwd("..")
 setwd("MM_3_SCEXTRACT")
 dir_scextract <- dir()
 
+### seperates old and new scextract files
+
 dir_scextract_new <- dir_scextract[startsWith(dir_scextract,"sc")]
 dir_scextract_old <- dir_scextract[!startsWith(dir_scextract,"sc")]
 
-scextractold<-read_delim(dir_scextract_old,delim = "|") %>%
+### imports the old sc_extract file from when mary did it
+
+t_scextractold_head <-na.omit(as.character(read_delim(dir_scextract_old, delim = "|", n_max = 1, col_names = FALSE))) 
+
+length(t_scextractold)
+r <- paste0(rep("c", 43), collapse = "")
+
+t_scextractold <- read_delim(dir_scextract_old, delim = "|", col_types = r) %>%
   select(1:30)
 
-colnames(scextractold) <- CleanColnames(scextractold)
+### cleans colnames for scextract file
 
-scextract_new <- lapply()
+colnames(t_scextractold) <- CleanColnames(t_scextractold)
+
+### imports the scextract file
+
+t_scextract_new <- BWImport(dir_scextract_new)
+
+t_scextract_new <- MeasureColumns(t_scextract_new)
+
+### sets wd for shopping cart approval
+setwd("..")
+setwd("MM_6_OASC")
+dir_oasc <- dir()
+
+### imports and cleans the scextract file
+
+testoasc <- BWImport()
+
+### cleans the columns for the sc_extract file
+
+testoasc %<>% MeasureColumns()
+
+### sets wd for aravo reg
+setwd("..")
+setwd("..")
+setwd("5_Aravo/MM_1_PLB")
+dir_PLB <- dir()
+
+t_AravoPLB <- read_csv(dir_PLB, col_types = "ccc")
+
+### sets wd for contracts
+
+setwd("G:/SOURCING-CENTRAL/3 - Executed Contracts")
+
+### reads each of the shared drive folders
+
+setwd("1 - Cruises")
+
+cruise_contracts <- directoryPrint()
+
+setwd("..")
+setwd("2 - Event Contracts")
+
+event_contracts <- directoryPrint()
+
+setwd("..")
+setwd("3 - Performance Agreements")
+
+performance_contracts <- as.data.frame(dir(), stringsAsFactors = FALSE)
+
+setwd("..")
+setwd("4 - Freelance Agreements")
+
+freelance_contracts <- as.data.frame(dir(), stringsAsFactors = FALSE)
+
+setwd("..")
+setwd("5 - Residency Agreements")
+
+residency_contracts <- as.data.frame(dir(), stringsAsFactors = FALSE)
+
+shared_drive_contracts <- bind_rows(cruise_contracts, event_contracts, performance_contracts,
+                                    freelance_contracts, residency_contracts)
+
+rm(residency_contracts, freelance_contracts, performance_contracts,
+   event_contracts, cruise_contracts)
+
+colnames(shared_drive_contracts) <- CleanColnames(shared_drive_contracts)
+
+sdcontracts <- shared_drive_contracts %>%
+ separate(dir,c("BUYER","DATE"),extra = "drop", fill = "left")
+
+### reads the ariba contracts file
+
